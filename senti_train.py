@@ -156,7 +156,7 @@ print('Senti_Net Classifier Network saved....')
 ####################
 
 republican_test = 'Trump is my president'
-Democratic_test = 'Bernie Sanders!!'
+democratic_test = 'Bernie Sanders!!'
 
 
 Poli_Senti_Net = torch.load(f'./models/mp_tweet_senti_net_classifer.pth')
@@ -172,4 +172,4 @@ print(f'Test 2: \
         democratic_tweet: {Democratic_test}')
 print('\n')
 print('Prediction:')
-predict(Poli_Senti_Net, Democratic_test, vocab_to_int, utility_params['seq_length'], pad_features)
+predict(Poli_Senti_Net, democratic_test, vocab_to_int, utility_params['seq_length'], pad_features)
