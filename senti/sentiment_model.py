@@ -77,8 +77,8 @@ def predict(net, test, vocab_to_int, seq_length, pad_features):
     print('Prediction value, pre-rounding: {:.6}'.format(output.item()))
 
     if pred.item() == 1:
-        print('biden ethos detected')
+        print('Democratic Sentiment detected')
     else:
-        print('not biden ethos detected')
+        print('Republican Sentiment detected')
 
     
