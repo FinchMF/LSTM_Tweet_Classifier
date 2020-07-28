@@ -169,7 +169,7 @@ print('Prediction:')
 predict(Poli_Senti_Net, republican_test, vocab_to_int, utility_params['seq_length'], pad_features)
 print('\n')
 print(f'Test 2: \
-        democratic_tweet: {Democratic_test}')
+        democratic_tweet: {democratic_test}')
 print('\n')
 print('Prediction:')
 predict(Poli_Senti_Net, democratic_test, vocab_to_int, utility_params['seq_length'], pad_features)
