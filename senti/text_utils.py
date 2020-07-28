@@ -57,7 +57,7 @@ def encode_labels(labels):
 
 
 def pad_features(tweet_ints, seq_length):
-    features = np.zeros(len(tweet_ints, seq_length), dtype=int)
+    features = np.zeros((len(tweet_ints), seq_length), dtype=int)
 
     for i, row in enumerate(tweet_ints):
         features[i, -len(row):] = np.array(row)[:seq_length]

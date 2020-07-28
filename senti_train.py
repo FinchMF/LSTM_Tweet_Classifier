@@ -7,13 +7,13 @@ from torch.utils.data import TensorDataset, DataLoader
 
 from senti.param_config import configure_utility_params, configure_senti_LSTM, configure_training_params 
 from senti.text_utils import encode_words, encode_labels, parse_tweets, pad_features, read_in_txt_data
-from senti.sentiment_model import Senti_LSTM
+from senti.sentiment_model import Senti_LSTM, predict
 
 data_root = './data/'
 ext = '.txt'
-name = 'mp'
-tweets_txt = f'{data_root}{name}_tweets{ext}'
-labels_txt = f'{data_root}{name}_labels{ext}'
+name = 'mp_tweet'
+tweets_txt = f'{data_root}{name}_text{ext}'
+labels_txt = f'{data_root}{name}_label{ext}'
 
 tweets, labels = read_in_txt_data(tweets_txt, labels_txt)
 words, tweets_split = parse_tweets(tweets)
@@ -64,9 +64,9 @@ train_data = TensorDataset(torch.from_numpy(train_x), torch.from_numpy(train_y))
 valid_data = TensorDataset(torch.from_numpy(val_x), torch.from_numpy(val_y))
 test_data = TensorDataset(torch.from_numpy(test_x), torch.from_numpy(test_y))
 
-train_loader = DataLoader(train_data, shuffle=True, batch_size=utility_params['batch_size'])
-valid_loader = DataLoader(valid_data, shuffle=True, batch_size=utility_params['batch_size'])
-test_loader = DataLoader(test_data, shuffle=True, batch_size=utility_params['batch_size'])
+train_loader = DataLoader(train_data, shuffle=True, batch_size=utility_params['batch_size'], drop_last=True)
+valid_loader = DataLoader(valid_data, shuffle=True, batch_size=utility_params['batch_size'], drop_last=True)
+test_loader = DataLoader(test_data, shuffle=True, batch_size=utility_params['batch_size'], drop_last=True)
 
 dataiter = iter(train_loader)
 sample_x, sample_y = dataiter.next()
@@ -107,7 +107,7 @@ net.train()
 for e in range(training_params['epochs']):
     h = net.init_hidden(utility_params['batch_size'])
 
-    for inputs, lables in train_loader:
+    for inputs, labels in train_loader:
         counter += 1
 
         if train_on_gpu:
@@ -118,7 +118,7 @@ for e in range(training_params['epochs']):
         net.zero_grad()
 
         output, h = net(inputs, h)
-        loss = training_params['criterion'](output.squeeze(), lables.float())
+        loss = training_params['criterion'](output.squeeze(), labels.float())
         loss.backward()
 
         nn.utils.clip_grad_norm_(net.parameters(), training_params['clip'])
@@ -151,3 +151,25 @@ torch.save(net, f'./models/{name}_senti_net_classifer.pth')
 print('Senti_Net Classifier Network saved....')        
 
 
+####################
+# Testing Accuracy #
+####################
+
+republican_test = 'Trump is my president'
+Democratic_test = 'Bernie Sanders!!'
+
+
+Poli_Senti_Net = torch.load(f'./models/mp_tweet_senti_net_classifer.pth')
+print('Trained Model Loaded....')
+print('\n')
+print(f'Test 1: \
+        republican_tweet: {republican_test}')
+print('\n')
+print('Prediction:')
+predict(Poli_Senti_Net, republican_test, vocab_to_int, utility_params['seq_length'], pad_features)
+print('\n')
+print(f'Test 2: \
+        democratic_tweet: {Democratic_test}')
+print('\n')
+print('Prediction:')
+predict(Poli_Senti_Net, Democratic_test, vocab_to_int, utility_params['seq_length'], pad_features)
